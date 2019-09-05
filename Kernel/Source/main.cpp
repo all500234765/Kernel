@@ -27,7 +27,7 @@ int main() {
     Flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-    D3D_FEATURE_LEVEL levels[] = { D3D_FEATURE_LEVEL_12_1 };
+    D3D_FEATURE_LEVEL levels[] = { D3D_FEATURE_LEVEL_11_0 };
     if( D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, Flags, levels, 1, D3D11_SDK_VERSION, 
                           &gDirectX->gDevice, NULL, &gDirectX->gContext) != S_OK ) {
         Release();
@@ -73,19 +73,15 @@ int main() {
 
     img = (unsigned char *)malloc(3 * gWidth * gHeight);
     memset(img, 0, 3 * gWidth * gHeight);
+    //memcpy(&img[0], &sbData[0], );
 
+    sbData.Map();
     for( int i = 0; i < gWidth * gHeight; i++ ) {
         img[i * 3 + 0] = (unsigned char)(sbData[i].Pixel.z * 255);
         img[i * 3 + 1] = (unsigned char)(sbData[i].Pixel.y * 255);
         img[i * 3 + 2] = (unsigned char)(sbData[i].Pixel.x * 255);
-
-        /*for( int j = 0; j < 3; j++ ) {
-            r = sbData[i].a[j] * 255;
-            if( r > 255 ) r = 255;
-
-            img[i * 3 + 2 - j] = (unsigned char)(r);
-        }*/
     }
+    sbData.Unmap();
 
     // Image header
     unsigned char bmpfileheader[14] = { 'B','M', 0,0,0,0, 0,0, 0,0, 54,0,0,0 };
@@ -120,7 +116,7 @@ int main() {
 
     // 
     std::cout << "Done!" << std::endl;
-    std::cin.get();
+    //std::cin.get();
 
     // Unload DirectX objects
     Release();
